@@ -1,0 +1,255 @@
+[25-Jul-2024 04:11:49 UTC] PHP Parse error:  syntax error, unexpected identifier "database" in /home/y19syant1ib9/public_html/aft/upload.php on line 6
+[25-Jul-2024 04:13:23 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "DB_SERVER" in /home/y19syant1ib9/public_html/aft/upload.php:31
+Stack trace:
+#0 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/upload.php on line 31
+[25-Jul-2024 04:14:40 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "DB_USERNAME" in /home/y19syant1ib9/public_html/aft/upload.php:31
+Stack trace:
+#0 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/upload.php on line 31
+[02-Aug-2024 05:42:42 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[02-Aug-2024 05:42:48 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[02-Aug-2024 05:42:52 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[02-Aug-2024 05:59:29 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[02-Aug-2024 05:59:36 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[02-Aug-2024 06:00:18 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'pension' limit 0, 10' at line 1 in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[05-Aug-2024 10:32:20 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[06-Aug-2024 07:27:35 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 469
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/index.php on line 190
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 493
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 535
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 469
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/index.php on line 190
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 493
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 535
+[08-Aug-2024 06:50:19 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 469
+[08-Aug-2024 06:50:20 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/index.php on line 190
+[08-Aug-2024 06:50:20 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 493
+[08-Aug-2024 06:50:20 UTC] PHP Warning:  A non-numeric value encountered in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 535
+[13-Aug-2024 07:24:40 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:13 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:19 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:21 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:22 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:22 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:25 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:54 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:34:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:35:06 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:35:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 05:35:16 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[21-Aug-2024 10:27:31 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[27-Aug-2024 06:18:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[29-Aug-2024 09:04:49 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[29-Aug-2024 09:04:54 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:27:57 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:08 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:12 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:12 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:12 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:13 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:13 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:21 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:26 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:26 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
+[30-Aug-2024 07:28:26 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'i7457310_nrjd1.aft_judgement' doesn't exist in /home/y19syant1ib9/public_html/aft/database/DataModel.php:191
+Stack trace:
+#0 /home/y19syant1ib9/public_html/aft/database/DataModel.php(191): mysqli->query()
+#1 /home/y19syant1ib9/public_html/aft/index.php(81): DataModel->getFilter()
+#2 {main}
+  thrown in /home/y19syant1ib9/public_html/aft/database/DataModel.php on line 191
