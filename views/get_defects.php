@@ -1,17 +1,6 @@
 <?php
-// Database connection parameters
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "aft_site";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Database connection failed."]));
-}
+// Include the database connection
+require_once dirname(__FILE__).'/../config/db_connection.php';
 
 // Get the `sid` from the request
 $sid = isset($_GET['sid']) ? intval($_GET['sid']) : 0;
@@ -40,7 +29,10 @@ if ($sid > 0) {
             $registration_no = $reg_row['registration_no'];
 
             // Return the registration_no and message
-            echo json_encode(["message" => "Diary no is already registered and Registration no is $registration_no."]);
+            echo json_encode([
+                "diary_no" => $diary_no,  // Include the diary_no
+                "message" => "Diary no is already registered and Registration no is $registration_no."
+            ]);
             exit();
         } else {
             // Check if the diary_no exists in aft_disposedof
@@ -58,13 +50,13 @@ if ($sid > 0) {
 
                 // Return message about the judgement being pronounced
                 echo json_encode([
-                    "message" => "Judgement has already been pronounced for the case. Registration No is: $disposed_registration_no ",
-                    "diary_no" => $disposed_diary_no,
-                    "registration_no" => $disposed_registration_no
+                    "diary_no" => $disposed_diary_no,  // Include the diary_no
+                    "registration_no" => $disposed_registration_no,
+                    "message" => "Judgement has already been pronounced for the case. Registration No is: $disposed_registration_no."
                 ]);
                 exit();
             } else {
-                // If diary_no is not found in aft_registration and aft_disposedof, return any defects
+                // Check for defects in aft_notifications if not found in aft_registration or aft_disposedof
                 $sql = "SELECT defect FROM aft_notifications WHERE sid = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("i", $sid);
@@ -77,9 +69,16 @@ if ($sid > 0) {
                 }
 
                 if (!empty($defects)) {
-                    echo json_encode($defects);
+                    echo json_encode([
+                        "diary_no" => $diary_no,  // Include the diary_no
+                        "defects" => $defects
+                    ]);
                 } else {
-                    echo json_encode(["message" => "No defects found."]);
+                    // If no records are found in aft_registration, aft_disposedof, or aft_notifications
+                    echo json_encode([
+                        "diary_no" => $diary_no,  // Include the diary_no
+                        "message" => "It seems that the diary no is not scrutinized as yet."
+                    ]);
                 }
                 exit();
             }

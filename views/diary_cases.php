@@ -8,82 +8,98 @@
     <title>Diary Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for modal */
+        .modal-dialog { max-width: 600px; width: 100%; }
+        .modal-content { padding: 20px; }
+        .modal-header { background-color: #007bff; color: white; }
+        .modal-title { font-size: 1.3em; font-weight: bold; }
+        .info-section {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .essential-info { background-color: #f9f9f9; font-weight: bold; }
+        .non-essential-info, .defects-section { background-color: #f1f1f1; font-size: 0.95em; }
+        .table th, .table td { vertical-align: middle; }
+        .status-button { width: 100%; margin-top: 5px; }
+    </style>
     <script>
         function resetForm() {
             document.getElementById("searchForm").reset();
-            document.getElementById("diary_no").value = "";
-            document.getElementById("date_of_presentation").value = "";
-            document.getElementById("presented_by").value = "";
+            const fieldsToReset = ['diary_no', 'date_of_presentation', 'presented_by'];
+            fieldsToReset.forEach(id => document.getElementById(id).value = "");
             document.getElementById("results_per_page").selectedIndex = 1;
-
             const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.pushState({ path: url }, '', url);
         }
 
-        function viewDetails(id, diary_no, date_of_presentation, nature_of_doc, associated_with, presented_by, reviewed_by, nature_of_grievance, nature_of_grievance_code, subject, subject_code, result, section_officer_remark, deputy_registrar_remark, registrar_remark, not_completed_observations, casetype, no_of_applicants, no_of_respondents, initial, remark, ca_remark, notification_remark, notification_date, nature_of_grievance_other) {
-            document.getElementById("modalDiaryNo").innerText = diary_no || 'Not Available';
-            document.getElementById("modalDateOfPresentation").innerText = date_of_presentation || 'Not Available';
-            document.getElementById("modalNatureOfDoc").innerText = nature_of_doc || 'Not Available';
-            document.getElementById("modalAssociatedWith").innerText = associated_with || 'Not Available';
-            document.getElementById("modalPresentedBy").innerText = presented_by || 'Not Available';
-            document.getElementById("modalReviewedBy").innerText = reviewed_by || 'Not Available';
-            document.getElementById("modalNatureOfGrievance").innerText = nature_of_grievance || 'Not Available';
-            document.getElementById("modalNatureOfGrievanceCode").innerText = nature_of_grievance_code || 'Not Available';
-            document.getElementById("modalSubject").innerText = subject || 'Not Available';
-            document.getElementById("modalSubjectCode").innerText = subject_code || 'Not Available';
-            document.getElementById("modalResult").innerText = result || 'Not Available';
-            document.getElementById("modalSectionOfficerRemark").innerText = section_officer_remark || 'Not Available';
-            document.getElementById("modalDeputyRegistrarRemark").innerText = deputy_registrar_remark || 'Not Available';
-            document.getElementById("modalRegistrarRemark").innerText = registrar_remark || 'Not Available';
-            document.getElementById("modalNotCompletedObservations").innerText = not_completed_observations || 'Not Available';
-            document.getElementById("modalCaseType").innerText = casetype || 'Not Available';
-            document.getElementById("modalNoOfApplicants").innerText = no_of_applicants || 'Not Available';
-            document.getElementById("modalNoOfRespondents").innerText = no_of_respondents || 'Not Available';
-            document.getElementById("modalInitial").innerText = initial || 'Not Available';
-            document.getElementById("modalRemark").innerText = remark || 'Not Available';
-            document.getElementById("modalCaRemark").innerText = ca_remark || 'Not Available';
-            document.getElementById("modalNotificationRemark").innerText = notification_remark || 'Not Available';
-            document.getElementById("modalNotificationDate").innerText = notification_date || 'Not Available';
-            document.getElementById("modalNatureOfGrievanceOther").innerText = nature_of_grievance_other || 'Not Available';
-            document.getElementById("modalDefects").innerText = ""; // Defects will be fetched separately
-            document.getElementById("viewDefectsButton").setAttribute("data-id", id);
+        function setModalContent(modalData) {
+            const fields = ['DiaryNo', 'DateOfPresentation', 'NatureOfDoc', 'AssociatedWith', 'PresentedBy', 'ReviewedBy', 
+                            'SectionOfficerRemark', 'DeputyRegistrarRemark', 'RegistrarRemark', 'NotCompletedObservations', 
+                            'CaseType', 'NoOfApplicants', 'NoOfRespondents', 'Initial', 'Remark', 'CaRemark', 
+                            'NotificationRemark', 'NotificationDate', 'NatureOfGrievanceOther'];
+            fields.forEach(field => {
+                document.getElementById(`modal${field}`).innerText = modalData[field.toLowerCase()] || 'Not Available';
+            });
+        }
+
+        function viewDetails(...details) {
+            const modalData = {
+                id: details[0], diary_no: details[1], date_of_presentation: details[2], nature_of_doc: details[3],
+                associated_with: details[4], presented_by: details[5], reviewed_by: details[6], 
+                section_officer_remark: details[7], deputy_registrar_remark: details[8], registrar_remark: details[9], 
+                not_completed_observations: details[10], casetype: details[11], no_of_applicants: details[12], 
+                no_of_respondents: details[13], initial: details[14], remark: details[15], ca_remark: details[16],
+                notification_remark: details[17], notification_date: details[18], nature_of_grievance_other: details[19]
+            };
+            setModalContent(modalData);
             $('#detailsModal').modal('show');
-    }
+        }
 
-
-        function viewDefects() {
-            const id = document.getElementById("viewDefectsButton").getAttribute("data-id");
-
-            fetch(`get_defects.php?sid=${id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
+        function viewStatus(id, diaryNo, type) {
+            fetch(`get_defects.php?sid=${id}&type=${type}`)
+                .then(response => response.ok ? response.text() : Promise.reject())
                 .then(data => {
-                    try {
-                        const parsedData = JSON.parse(data);
-
-                        if (parsedData.message) {
-                            document.getElementById("modalDefects").innerText = parsedData.message;
-                        } else if (Array.isArray(parsedData) && parsedData.length > 0) {
-                            let defectsList = '<ul>';
-                            parsedData.forEach(defect => {
-                                defectsList += `<li>${defect}</li>`;
-                            });
-                            defectsList += '</ul>';
-                            document.getElementById("modalDefects").innerHTML = defectsList;
-                        } else {
-                            document.getElementById("modalDefects").innerText = "No defects found.";
-                        }
-                    } catch (error) {
-                        document.getElementById("modalDefects").innerText = "Error fetching defects.";
-                    }
+                    const parsedData = JSON.parse(data);
+                    document.getElementById("modalStatusContent").innerHTML = parsedData.defects ? 
+                        `<ul>${parsedData.defects.map(def => `<li>${def}</li>`).join('')}</ul>` : parsedData.message || "No status found.";
+                    document.getElementById("statusModalLabel").innerText = `Status for Diary No: ${parsedData.diary_no || diaryNo || "Not Available"} (${type || "Unknown"})`;
+                    $('#statusModal').modal('show');
                 })
-                .catch(error => {
-                    document.getElementById("modalDefects").innerText = "Error fetching defects.";
-                });
+                .catch(() => document.getElementById("modalStatusContent").innerText = "Error fetching status.");
+        }
+
+        function printModalContent() {
+            const modalContent = document.querySelector('#detailsModal .modal-body').innerHTML;
+            const printWindow = window.open('', '', 'height=800,width=600');
+            printWindow.document.write(`
+                <html><head><title>Print Diary Details</title><style>
+                    body { font-family: Arial, sans-serif; }
+                    .info-section { padding: 10px; margin-bottom: 10px; background-color: #f9f9f9; }
+                </style></head><body>
+                <h3>Diary Details</h3>${modalContent}</body></html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        function printStatusModalContent() {
+            const modalStatusContent = document.querySelector('#statusModal .modal-body').innerHTML;
+            const printWindow = window.open('', '', 'height=800,width=600');
+            printWindow.document.write(`
+                <html><head><title>Print Status Details</title><style>
+                    body { font-family: Arial, sans-serif; }
+                    .status-content { padding: 10px; margin-bottom: 10px; background-color: #f1f1f1; }
+                </style></head><body>
+                <h3>Status Details</h3>${modalStatusContent}</body></html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
         }
     </script>
 </head>
@@ -122,19 +138,18 @@
         </div>
     </form>
 
+    <!-- PHP for fetching and displaying data -->
     <?php
     // Include the database connection
-require_once dirname(__FILE__).'/../config/db_connection.php';
+    require_once dirname(__FILE__).'/../config/db_connection.php';
 
-
-    // Define how many results you want per page
+    // Refactored logic for data retrieval
     $results_per_page = isset($_GET['results_per_page']) ? (int)$_GET['results_per_page'] : 10;
-    $results_per_page = max(1, $results_per_page); // Ensure it's at least 1
-
-    // Initialize the search query conditions
+    $results_per_page = max(1, $results_per_page);
+    
     $conditions = "id > 50000";
     $params = [];
-    $types = ''; // To store parameter types for bind_param
+    $types = '';
 
     if (!empty($_GET['diary_no'])) {
         $conditions .= " AND diary_no LIKE ?";
@@ -142,7 +157,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
         $types .= 's';
     }
     if (!empty($_GET['date_of_presentation'])) {
-        // Convert the input date from yyyy-mm-dd to dd-mm-yyyy
         $date = DateTime::createFromFormat('Y-m-d', $_GET['date_of_presentation']);
         if ($date) {
             $formattedDate = $date->format('d-m-Y');
@@ -157,7 +171,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
         $types .= 's';
     }
 
-    // Prepare the total count query with search conditions
     $sql = "SELECT COUNT(id) AS total FROM aft_scrutiny WHERE $conditions";
     $stmt = $conn->prepare($sql);
 
@@ -170,22 +183,18 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
     $row = $result->fetch_assoc();
     $total_pages = ceil($row["total"] / $results_per_page);
 
-    // Determine which page number visitor is currently on
     $current_page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-    $current_page = max(1, min($current_page, $total_pages)); // Ensure current page is within valid range
+    $current_page = max(1, min($current_page, $total_pages));
 
-    // Determine the SQL LIMIT starting number for the results on the displaying page
     $starting_limit = ($current_page - 1) * $results_per_page;
-    $starting_limit = max(0, $starting_limit); // Ensure starting limit is non-negative
+    $starting_limit = max(0, $starting_limit);
 
-    // Prepare the main query with search conditions and pagination
     $sql = "SELECT * FROM aft_scrutiny WHERE $conditions LIMIT ?, ?";
     $stmt = $conn->prepare($sql);
 
-    // Add LIMIT and OFFSET as integers at the end of the $params array
     $params[] = $starting_limit;
     $params[] = $results_per_page;
-    $types .= 'ii'; // Add two integer placeholders for LIMIT and OFFSET
+    $types .= 'ii';
 
     $stmt->bind_param($types, ...$params);
     $stmt->execute();
@@ -195,7 +204,7 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
         echo '<div class="table-responsive">';
         echo '<table class="table table-bordered table-striped">';
         echo '<thead class="thead-dark">';
-        echo '<tr><th>Diary No</th><th>Date of Presentation</th><th>Nature of Document</th><th>Associated With</th><th>Presented By</th><th>Actions</th></tr>';
+        echo '<tr><th>Diary No</th><th>Date of Presentation</th><th>Nature of Document</th><th>Associated With</th><th>Presented By</th><th>Actions</th><th>Status</th></tr>';
         echo '</thead><tbody>';
         while($row = $result->fetch_assoc()) {
             echo "<tr>";
@@ -204,7 +213,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
             echo "<td>" . htmlspecialchars($row["nature_of_doc"]) . "</td>";
             echo "<td>" . htmlspecialchars($row["associated_with"]) . "</td>";
             echo "<td>" . htmlspecialchars($row["presented_by"]) . "</td>";
-            // Make sure to pass all the necessary columns to viewDetails()
             echo '<td><button class="btn btn-info btn-sm" onclick="viewDetails(
                 ' . $row["id"] . ', 
                 \'' . htmlspecialchars($row["diary_no"]) . '\', 
@@ -213,11 +221,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
                 \'' . htmlspecialchars($row["associated_with"]) . '\', 
                 \'' . htmlspecialchars($row["presented_by"]) . '\', 
                 \'' . htmlspecialchars($row["reviewed_by"]) . '\', 
-                \'' . htmlspecialchars($row["nature_of_grievance"]) . '\', 
-                \'' . htmlspecialchars($row["nature_of_grievance_code"]) . '\', 
-                \'' . htmlspecialchars($row["subject"]) . '\', 
-                \'' . htmlspecialchars($row["subject_code"]) . '\', 
-                \'' . htmlspecialchars($row["result"]) . '\', 
                 \'' . htmlspecialchars($row["section_officer_remark"]) . '\', 
                 \'' . htmlspecialchars($row["deputy_registrar_remark"]) . '\', 
                 \'' . htmlspecialchars($row["registrar_remark"]) . '\', 
@@ -232,17 +235,17 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
                 \'' . htmlspecialchars($row["notification_date"]) . '\', 
                 \'' . htmlspecialchars($row["nature_of_grievance_other"]) . '\'
                 )">View</button></td>';
+
+            echo '<td><button class="btn btn-warning btn-sm status-button" onclick="viewStatus(' . $row["id"] . ', \'' . htmlspecialchars($row["diary_no"]) . '\', \'registration\')">Status</button></td>';
             echo "</tr>";
         }
         
         echo '</tbody></table>';
         echo '</div>';
 
-        // Display pagination
         echo '<nav aria-label="Page navigation">';
         echo '<ul class="pagination justify-content-center">';
 
-        // Previous button
         if ($current_page > 1) {
             echo '<li class="page-item"><a class="page-link" href="' . $_SERVER['PHP_SELF'] . '?page=' . ($current_page - 1) . '&' . http_build_query($_GET) . '">Previous</a></li>';
         } else {
@@ -277,7 +280,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
             echo '<li class="page-item"><a class="page-link" href="' . $_SERVER['PHP_SELF'] . '?page=' . $total_pages . '&' . http_build_query($_GET) . '">' . $total_pages . '</a></li>';
         }
 
-        // Next button
         if ($current_page < $total_pages) {
             echo '<li class="page-item"><a class="page-link" href="' . $_SERVER['PHP_SELF'] . '?page=' . ($current_page + 1) . '&' . http_build_query($_GET) . '">Next</a></li>';
         } else {
@@ -290,7 +292,6 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
         echo '<div class="alert alert-warning" role="alert">No results found.</div>';
     }
 
-    // Close connection
     $conn->close();
     ?>
 
@@ -305,31 +306,39 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
                     </button>
                 </div>
                 <div class="modal-body">
-    <p><strong>Diary No:</strong> <span id="modalDiaryNo"></span></p>
-    <p><strong>Date of Presentation:</strong> <span id="modalDateOfPresentation"></span></p>
-    <p><strong>Nature of Document:</strong> <span id="modalNatureOfDoc"></span></p>
-    <p><strong>Associated With:</strong> <span id="modalAssociatedWith"></span></p>
-    <p><strong>Presented By:</strong> <span id="modalPresentedBy"></span></p>
-    <p><strong>Reviewed By:</strong> <span id="modalReviewedBy"></span></p>
-    <p><strong>Nature of Grievance:</strong> <span id="modalNatureOfGrievance"></span></p>
-    <p><strong>Nature of Grievance Code:</strong> <span id="modalNatureOfGrievanceCode"></span></p>
-    <p><strong>Result:</strong> <span id="modalResult"></span></p>
-    <p><strong>Section Officer Remark:</strong> <span id="modalSectionOfficerRemark"></span></p>
-    <p><strong>Deputy Registrar Remark:</strong> <span id="modalDeputyRegistrarRemark"></span></p>
-    <p><strong>Registrar Remark:</strong> <span id="modalRegistrarRemark"></span></p>
-    <p><strong>Not Completed Observations:</strong> <span id="modalNotCompletedObservations"></span></p>
-    <p><strong>Case Type:</strong> <span id="modalCaseType"></span></p>
-    <p><strong>No of Applicants:</strong> <span id="modalNoOfApplicants"></span></p>
-    <p><strong>No of Respondents:</strong> <span id="modalNoOfRespondents"></span></p>
-    <p><strong>Initial:</strong> <span id="modalInitial"></span></p>
-    <p><strong>Remark:</strong> <span id="modalRemark"></span></p>
-    <p><strong>CA Remark:</strong> <span id="modalCaRemark"></span></p>
-    <p><strong>Notification Remark:</strong> <span id="modalNotificationRemark"></span></p>
-    <p><strong>Notification Date:</strong> <span id="modalNotificationDate"></span></p>
-    <p><strong>Nature of Grievance (Other):</strong> <span id="modalNatureOfGrievanceOther"></span></p>
-    <p><strong>Defects:</strong> <span id="modalDefects"></span></p>
-    <button id="viewDefectsButton" class="btn btn-warning btn-sm mt-2" onclick="viewDefects()">View Defects</button>
-</div>
+                    <!-- Essential Information Section -->
+                    <div class="info-section essential-info">
+                        <p><strong>Diary No:</strong> <span id="modalDiaryNo"></span></p>
+                        <p><strong>Date of Presentation:</strong> <span id="modalDateOfPresentation"></span></p>
+                        <p><strong>Nature of Document:</strong> <span id="modalNatureOfDoc"></span></p>
+                        <p><strong>Associated With:</strong> <span id="modalAssociatedWith"></span></p>
+                        <p><strong>Presented By:</strong> <span id="modalPresentedBy"></span></p>
+                        <p><strong>Reviewed By:</strong> <span id="modalReviewedBy"></span></p>
+                    </div>
+
+                    <!-- Non-Essential Information Section -->
+                    <div class="info-section non-essential-info">
+                        <p><strong>Section Officer Remark:</strong> <span id="modalSectionOfficerRemark"></span></p>
+                        <p><strong>Deputy Registrar Remark:</strong> <span id="modalDeputyRegistrarRemark"></span></p>
+                        <p><strong>Registrar Remark:</strong> <span id="modalRegistrarRemark"></span></p>
+                        <p><strong>Not Completed Observations:</strong> <span id="modalNotCompletedObservations"></span></p>
+                        <p><strong>Case Type:</strong> <span id="modalCaseType"></span></p>
+                        <p><strong>No of Applicants:</strong> <span id="modalNoOfApplicants"></span></p>
+                        <p><strong>No of Respondents:</strong> <span id="modalNoOfRespondents"></span></p>
+                        <p><strong>Initial:</strong> <span id="modalInitial"></span></p>
+                        <p><strong>Remark:</strong> <span id="modalRemark"></span></p>
+                        <p><strong>CA Remark:</strong> <span id="modalCaRemark"></span></p>
+                        <p><strong>Notification Remark:</strong> <span id="modalNotificationRemark"></span></p>
+                        <p><strong>Notification Date:</strong> <span id="modalNotificationDate"></span></p>
+                        <p><strong>Nature of Grievance (Other):</strong> <span id="modalNatureOfGrievanceOther"></span></p>
+                    </div>
+
+                    <!-- Defects Section -->
+                    <!-- <div class="info-section defects-section">
+                        <p><strong>Current Staus:</strong> <span id="modalDefects"></span></p>
+                        <button id="viewDefectsButton" class="btn btn-warning btn-sm mt-2" onclick="viewStatus()">View Status</button>
+                    </div> -->
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="printModalContent()">Print</button>
@@ -337,79 +346,28 @@ require_once dirname(__FILE__).'/../config/db_connection.php';
             </div>
         </div>
     </div>
+
+    <!-- Small Modal for Status -->
+    <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalStatusContent"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="printStatusModalContent()">Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<script>
-function printModalContent() {
-    // Get all the values from the modal
-    var diaryNo = document.getElementById('modalDiaryNo').innerText;
-    var dateOfPresentation = document.getElementById('modalDateOfPresentation').innerText;
-    var natureOfDoc = document.getElementById('modalNatureOfDoc').innerText;
-    var associatedWith = document.getElementById('modalAssociatedWith').innerText;
-    var presentedBy = document.getElementById('modalPresentedBy').innerText;
-    var reviewedBy = document.getElementById('modalReviewedBy').innerText;
-    var natureOfGrievance = document.getElementById('modalNatureOfGrievance').innerText;
-    var natureOfGrievanceCode = document.getElementById('modalNatureOfGrievanceCode').innerText;
-    var subject = document.getElementById('modalSubject').innerText;
-    var subjectCode = document.getElementById('modalSubjectCode').innerText;
-    var result = document.getElementById('modalResult').innerText;
-    var sectionOfficerRemark = document.getElementById('modalSectionOfficerRemark').innerText;
-    var deputyRegistrarRemark = document.getElementById('modalDeputyRegistrarRemark').innerText;
-    var registrarRemark = document.getElementById('modalRegistrarRemark').innerText;
-    var notCompletedObservations = document.getElementById('modalNotCompletedObservations').innerText;
-    var caseType = document.getElementById('modalCaseType').innerText;
-    var noOfApplicants = document.getElementById('modalNoOfApplicants').innerText;
-    var noOfRespondents = document.getElementById('modalNoOfRespondents').innerText;
-    var initial = document.getElementById('modalInitial').innerText;
-    var remark = document.getElementById('modalRemark').innerText;
-    var caRemark = document.getElementById('modalCaRemark').innerText;
-    var notificationRemark = document.getElementById('modalNotificationRemark').innerText;
-    var notificationDate = document.getElementById('modalNotificationDate').innerText;
-    var natureOfGrievanceOther = document.getElementById('modalNatureOfGrievanceOther').innerText;
-    var defects = document.getElementById('modalDefects').innerText;
-
-    // Create a new window for printing
-    var printWindow = window.open('', '', 'height=800,width=600');
-    printWindow.document.write('<html><head><title>Print Diary Details</title>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write('<h3>Diary Details</h3>');
-
-    // Print all the values from the modal
-    printWindow.document.write('<p><strong>Diary No:</strong> ' + diaryNo + '</p>');
-    printWindow.document.write('<p><strong>Date of Presentation:</strong> ' + dateOfPresentation + '</p>');
-    printWindow.document.write('<p><strong>Nature of Document:</strong> ' + natureOfDoc + '</p>');
-    printWindow.document.write('<p><strong>Associated With:</strong> ' + associatedWith + '</p>');
-    printWindow.document.write('<p><strong>Presented By:</strong> ' + presentedBy + '</p>');
-    printWindow.document.write('<p><strong>Reviewed By:</strong> ' + reviewedBy + '</p>');
-    printWindow.document.write('<p><strong>Nature of Grievance:</strong> ' + natureOfGrievance + '</p>');
-    printWindow.document.write('<p><strong>Nature of Grievance Code:</strong> ' + natureOfGrievanceCode + '</p>');
-    printWindow.document.write('<p><strong>Subject:</strong> ' + subject + '</p>');
-    printWindow.document.write('<p><strong>Subject Code:</strong> ' + subjectCode + '</p>');
-    printWindow.document.write('<p><strong>Result:</strong> ' + result + '</p>');
-    printWindow.document.write('<p><strong>Section Officer Remark:</strong> ' + sectionOfficerRemark + '</p>');
-    printWindow.document.write('<p><strong>Deputy Registrar Remark:</strong> ' + deputyRegistrarRemark + '</p>');
-    printWindow.document.write('<p><strong>Registrar Remark:</strong> ' + registrarRemark + '</p>');
-    printWindow.document.write('<p><strong>Not Completed Observations:</strong> ' + notCompletedObservations + '</p>');
-    printWindow.document.write('<p><strong>Case Type:</strong> ' + caseType + '</p>');
-    printWindow.document.write('<p><strong>No of Applicants:</strong> ' + noOfApplicants + '</p>');
-    printWindow.document.write('<p><strong>No of Respondents:</strong> ' + noOfRespondents + '</p>');
-    printWindow.document.write('<p><strong>Initial:</strong> ' + initial + '</p>');
-    printWindow.document.write('<p><strong>Remark:</strong> ' + remark + '</p>');
-    printWindow.document.write('<p><strong>CA Remark:</strong> ' + caRemark + '</p>');
-    printWindow.document.write('<p><strong>Notification Remark:</strong> ' + notificationRemark + '</p>');
-    printWindow.document.write('<p><strong>Notification Date:</strong> ' + notificationDate + '</p>');
-    printWindow.document.write('<p><strong>Nature of Grievance (Other):</strong> ' + natureOfGrievanceOther + '</p>');
-    printWindow.document.write('<p><strong>Defects:</strong> ' + defects + '</p>');
-
-    printWindow.document.write('</body></html>');
-
-    // Close and print the window
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-}
-
-</script>
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
