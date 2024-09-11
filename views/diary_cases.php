@@ -8,22 +8,64 @@
     <title>Diary Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles for modal */
-        .modal-dialog { max-width: 600px; width: 100%; }
-        .modal-content { padding: 20px; }
-        .modal-header { background-color: #007bff; color: white; }
-        .modal-title { font-size: 1.3em; font-weight: bold; }
-        .info-section {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .essential-info { background-color: #f9f9f9; font-weight: bold; }
-        .non-essential-info, .defects-section { background-color: #f1f1f1; font-size: 0.95em; }
-        .table th, .table td { vertical-align: middle; }
-        .status-button { width: 100%; margin-top: 5px; }
-    </style>
+    <!-- Custom CSS for Table Header Word Wrapping -->
+<style>
+    /* Ensure table headers wrap long words or phrases */
+    .table th {
+        white-space: normal !important; /* Allow words to wrap in th */
+        word-wrap: break-word;
+    }
+
+    /* Existing Custom styles for modal */
+    .modal-dialog { 
+        max-width: 600px; 
+        width: 100%; 
+    }
+    .modal-content { 
+        padding: 20px; 
+    }
+    .modal-header { 
+        background-color: #007bff; 
+        color: white; 
+    }
+    .modal-title { 
+        font-size: 1.3em; 
+        font-weight: bold; 
+    }
+    .info-section {
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    .essential-info { 
+        background-color: #f9f9f9; 
+        font-weight: bold; 
+    }
+    .non-essential-info, .defects-section { 
+        background-color: #f1f1f1; 
+        font-size: 0.95em; 
+    }
+    .table th, .table td { 
+        vertical-align: middle; 
+    }
+    .status-button { 
+        width: 100%; 
+        margin-top: 5px; 
+    }
+
+    /* Full-Screen Modal Styles */
+    .modal-fullscreen {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .modal-content {
+        height: 100%;
+        overflow-y: auto;
+    }
+</style>
     <script>
         function resetForm() {
             document.getElementById("searchForm").reset();
@@ -35,14 +77,37 @@
         }
 
         function setModalContent(modalData) {
-            const fields = ['DiaryNo', 'DateOfPresentation', 'NatureOfDoc', 'AssociatedWith', 'PresentedBy', 'ReviewedBy', 
-                            'SectionOfficerRemark', 'DeputyRegistrarRemark', 'RegistrarRemark', 'NotCompletedObservations', 
-                            'CaseType', 'NoOfApplicants', 'NoOfRespondents', 'Initial', 'Remark', 'CaRemark', 
-                            'NotificationRemark', 'NotificationDate', 'NatureOfGrievanceOther'];
-            fields.forEach(field => {
-                document.getElementById(`modal${field}`).innerText = modalData[field.toLowerCase()] || 'Not Available';
-            });
-        }
+    const fieldMapping = {
+        DiaryNo: 'diary_no',
+        DateOfPresentation: 'date_of_presentation',
+        NatureOfDoc: 'nature_of_doc',
+        AssociatedWith: 'associated_with',
+        PresentedBy: 'presented_by',
+        ReviewedBy: 'reviewed_by',
+        SectionOfficerRemark: 'section_officer_remark',
+        DeputyRegistrarRemark: 'deputy_registrar_remark',
+        RegistrarRemark: 'registrar_remark',
+        NotCompletedObservations: 'not_completed_observations',
+        CaseType: 'casetype',
+        NoOfApplicants: 'no_of_applicants',
+        NoOfRespondents: 'no_of_respondents',
+        Initial: 'initial',
+        Remark: 'remark',
+        CaRemark: 'ca_remark',
+        NotificationRemark: 'notification_remark',
+        NotificationDate: 'notification_date',
+        NatureOfGrievanceOther: 'nature_of_grievance_other'
+    };
+
+    Object.keys(fieldMapping).forEach(field => {
+        const modalField = fieldMapping[field];  // Get the snake_case field from the mapping
+        const value = modalData[modalField] || 'Not Available';  // Fetch the value or display 'Not Available'
+        
+        document.getElementById(`modal${field}`).innerText = value;
+    });
+}
+
+
 
         function viewDetails(...details) {
             const modalData = {
@@ -58,19 +123,105 @@
         }
 
         function viewStatus(id, diaryNo, type) {
-            fetch(`get_defects.php?sid=${id}&type=${type}`)
-                .then(response => response.ok ? response.text() : Promise.reject())
-                .then(data => {
-                    const parsedData = JSON.parse(data);
-                    document.getElementById("modalStatusContent").innerHTML = parsedData.defects ? 
-                        `<ul>${parsedData.defects.map(def => `<li>${def}</li>`).join('')}</ul>` : parsedData.message || "No status found.";
-                    document.getElementById("statusModalLabel").innerText = `Status for Diary No: ${parsedData.diary_no || diaryNo || "Not Available"} (${type || "Unknown"})`;
-                    $('#statusModal').modal('show');
-                })
-                .catch(() => document.getElementById("modalStatusContent").innerText = "Error fetching status.");
-        }
+    fetch(`get_defects.php?sid=${id}&type=${type}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Fetched data:', data);  // Log the fetched data for debugging
+            
+            const tableBody = document.getElementById('modalStatusContent');
+            const modalLabel = document.getElementById("statusModalLabel");
 
-        function printModalContent() {
+            // Clear any previous content in the modal
+            tableBody.innerHTML = '';
+
+            // Display the diary number in the modal title
+            modalLabel.innerText = `Status for Diary No: ${data.diary_no || diaryNo || "Not Available"} (${type || "Unknown"})`;
+
+            // Check if we have a message to display
+            if (data.message) {
+                // Create a table row for the message
+                const messageRow = `
+                    <tr>
+                        <td colspan="6" style="padding: 15px; text-align: center; font-size: 16px; font-weight: bold; color: green;">
+                            ${data.message}
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += messageRow;
+            }
+
+            // Check if defects data exists
+            if (data.defects && data.defects.length > 0) {
+                // Insert the new paragraph before the table rows
+                const notificationParagraph = `
+                    <tr>
+                        <td colspan="6" style="padding: 15px; font-size: 14px; font-weight: bold; text-align: left; color: #007bff;">
+                            The papers filed in the following cases have been found on scrutiny to be defective. </br>
+                            Hence, it is hereby notified that the Applicant(s)/Respondent(s) or his/their Legal </br> 
+                            Practitioner is/are required to rectify the defects in the registry itself, if they are </br>
+                            formal in nature or take back the papers for rectification of the defects and </br>
+                            representation if they are not formal in nature, within the time shown against </br>
+                            each case. 
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += notificationParagraph;
+
+                // Now add the table header for defects
+                const headerRow = `
+                    <tr class="thead-dark">
+                        <th style="width: 5%; text-align: center;">S.No.</th>
+                        <th style="width: 25%;">Papers in which defects are noticed</th>
+                        <th style="width: 20%;">By whom defects are to be rectified</th>
+                        <th style="width: 20%;">Nature of defects</th>
+                        <th style="width: 15%; text-align: center;">Time granted for rectification</th>
+                        <th style="width: 15%; text-align: center;">Rectified</th>
+                    </tr>
+                `;
+                tableBody.innerHTML += headerRow;
+
+                // Loop through defects and append them as table rows
+                data.defects.forEach((defect, index) => {
+                    const row = `
+                        <tr style="font-family: 'Arial', sans-serif; font-size: 14px; color: #333;">
+                            <td style="padding: 10px; font-weight: bold; color: #007bff; text-align: center;">${index + 1}</td>
+                            <td style="padding: 10px; word-wrap: break-word; max-width: 200px; white-space: normal;">${defect.defect || 'N/A'}</td>
+                            <td style="padding: 10px; word-wrap: break-word; max-width: 200px; white-space: normal;">${defect.rectified_by || 'N/A'}</td>
+                            <td style="padding: 10px; word-wrap: break-word; max-width: 200px; white-space: normal;">${defect.nature || 'N/A'}</td>
+                            <td style="padding: 10px; text-align: center;">${defect.time_granted || 'N/A'}</td>
+                            <td style="padding: 10px; text-align: center;">${defect.rectified || 'N/A'}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } else if (!data.message) {
+                // If no defects or message, show a default message
+                tableBody.innerHTML = `<tr><td colspan="6" style="padding: 15px; text-align: center; font-size: 16px; font-weight: bold; color: #ff0000;">No defects found.</td></tr>`;
+            }
+
+            // Show the modal after content is added
+            $('#statusModal').modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);  // Log any errors
+            const tableBody = document.getElementById('modalStatusContent');
+            tableBody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; font-size: 16px; font-weight: bold; color: #ff0000;">Error fetching status.</td></tr>';
+        });
+}
+
+
+
+
+
+    function printModalContent() {
             const modalContent = document.querySelector('#detailsModal .modal-body').innerHTML;
             const printWindow = window.open('', '', 'height=800,width=600');
             printWindow.document.write(`
@@ -87,20 +238,37 @@
         }
 
         function printStatusModalContent() {
-            const modalStatusContent = document.querySelector('#statusModal .modal-body').innerHTML;
-            const printWindow = window.open('', '', 'height=800,width=600');
-            printWindow.document.write(`
-                <html><head><title>Print Status Details</title><style>
-                    body { font-family: Arial, sans-serif; }
-                    .status-content { padding: 10px; margin-bottom: 10px; background-color: #f1f1f1; }
-                </style></head><body>
-                <h3>Status Details</h3>${modalStatusContent}</body></html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        }
+    const modalContent = document.querySelector('#statusModal .modal-body').innerHTML; // Get modal content
+    const printWindow = window.open('', '', 'height=800,width=900'); // Open a new window for printing
+
+    // Write the modal content into the print window with some styles
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Print Status</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .table { width: 100%; border-collapse: collapse; }
+                .table, .table th, .table td { border: 1px solid #333; }
+                .table th, .table td { padding: 10px; text-align: left; }
+                .table thead { background-color: #f1f1f1; font-weight: bold; }
+                h5 { font-size: 1.3em; font-weight: bold; }
+                .thead-dark th { background-color: #007bff; color: white; }
+            </style>
+        </head>
+        <body>
+            <h5>${document.getElementById('statusModalLabel').innerText}</h5> <!-- Display modal title -->
+            ${modalContent}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close(); // Close the document for writing
+    printWindow.focus(); // Focus the new window
+    printWindow.print(); // Trigger the print dialog
+    printWindow.close(); // Close the print window after printing
+}
+
     </script>
 </head>
 <body>
@@ -147,7 +315,7 @@
     $results_per_page = isset($_GET['results_per_page']) ? (int)$_GET['results_per_page'] : 10;
     $results_per_page = max(1, $results_per_page);
     
-    $conditions = "id > 50000";
+    $conditions = "id > 60000";
     $params = [];
     $types = '';
 
@@ -347,27 +515,33 @@
         </div>
     </div>
 
-    <!-- Small Modal for Status -->
-    <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="statusModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalStatusContent"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="printStatusModalContent()">Print</button>
-                </div>
+<!-- Modal for Viewing Status (Medium-Sized Modal) -->
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #007bff; color: white;">
+                <h5 class="modal-title" id="statusModalLabel" style="font-weight: bold;">Status for Diary No:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                   
+                    <tbody id="modalStatusContent">
+                        <!-- Dynamic rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- Print button -->
+                <button type="button" class="btn btn-primary" onclick="printStatusModalContent()">Print</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
