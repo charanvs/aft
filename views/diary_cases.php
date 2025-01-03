@@ -10,63 +10,121 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS for Table Header Word Wrapping -->
 <style>
-    /* Ensure table headers wrap long words or phrases */
-    .table th {
-        white-space: normal !important; /* Allow words to wrap in th */
-        word-wrap: break-word;
-    }
+      /* Ensure table headers wrap long words or phrases */
+      .table th {
+            white-space: normal !important;
+            word-wrap: break-word;
+        }
 
-    /* Existing Custom styles for modal */
-    .modal-dialog { 
-        max-width: 600px; 
-        width: 100%; 
-    }
-    .modal-content { 
-        padding: 20px; 
-    }
-    .modal-header { 
-        background-color: #007bff; 
-        color: white; 
-    }
-    .modal-title { 
-        font-size: 1.3em; 
-        font-weight: bold; 
-    }
-    .info-section {
-        padding: 15px;
-        border-radius: 4px;
-        margin-bottom: 15px;
-    }
-    .essential-info { 
-        background-color: #f9f9f9; 
-        font-weight: bold; 
-    }
-    .non-essential-info, .defects-section { 
-        background-color: #f1f1f1; 
-        font-size: 0.95em; 
-    }
-    .table th, .table td { 
-        vertical-align: middle; 
-    }
-    .status-button { 
-        width: 100%; 
-        margin-top: 5px; 
-    }
+        /* Sorting icons */
+        .sortable {
+            cursor: pointer;
+        }
+        .sortable:after {
+            content: ' ';
+            display: inline-block;
+            margin-left: 5px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .sortable.asc:after {
+            border-bottom: 5px solid black;
+        }
+        .sortable.desc:after {
+            border-top: 5px solid black;
+        }
 
-    /* Full-Screen Modal Styles */
-    .modal-fullscreen {
-        width: 100%;
-        max-width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    .modal-content {
-        height: 100%;
-        overflow-y: auto;
-    }
+        /* Existing Custom styles for modal */
+        .modal-dialog { 
+            max-width: 600px; 
+            width: 100%; 
+        }
+        .modal-content { 
+            padding: 20px; 
+        }
+        .modal-header { 
+            background-color: #007bff; 
+            color: white; 
+        }
+        .modal-title { 
+            font-size: 1.3em; 
+            font-weight: bold; 
+        }
+        .info-section {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .essential-info { 
+            background-color: #f9f9f9; 
+            font-weight: bold; 
+        }
+        .non-essential-info, .defects-section { 
+            background-color: #f1f1f1; 
+            font-size: 0.95em; 
+        }
+        .table th, .table td { 
+            vertical-align: middle; 
+        }
+        .status-button { 
+            width: 100%; 
+            margin-top: 5px; 
+        }
+
+        /* Full-Screen Modal Styles */
+        .modal-fullscreen {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .modal-content {
+            height: 100%;
+            overflow-y: auto;
+        }
 </style>
     <script>
+          let sortDirection = {
+            'diary_no': 'asc',
+            'date_of_presentation': 'asc'
+        };
+
+        function sortTable(column) {
+            const table = document.querySelector('table');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const direction = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+            sortDirection[column] = direction;
+
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.querySelector(`td[data-column="${column}"]`).innerText.trim();
+                const cellB = rowB.querySelector(`td[data-column="${column}"]`).innerText.trim();
+                
+                if (column === 'diary_no') {
+                    return direction === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                } else if (column === 'date_of_presentation') {
+                    const dateA = new Date(cellA.split('-').reverse().join('-'));
+                    const dateB = new Date(cellB.split('-').reverse().join('-'));
+                    return direction === 'asc' ? dateA - dateB : dateB - dateA;
+                }
+            });
+
+            const tbody = table.querySelector('tbody');
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update sorting icon
+            updateSortIcons(column, direction);
+        }
+
+        function updateSortIcons(column, direction) {
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.classList.remove('asc', 'desc');
+            });
+            document.getElementById(`sort-${column}`).classList.add(direction);
+        }
+
         function resetForm() {
             document.getElementById("searchForm").reset();
             const fieldsToReset = ['diary_no', 'date_of_presentation', 'presented_by'];
@@ -218,9 +276,6 @@
 }
 
 
-
-
-
     function printModalContent() {
             const modalContent = document.querySelector('#detailsModal .modal-body').innerHTML;
             const printWindow = window.open('', '', 'height=800,width=600');
@@ -274,36 +329,43 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center mb-4">Diary Details</h2>
-    <form method="get" id="searchForm" class="mb-4">
-        <div class="form-row">
-            <div class="col-md-4 mb-3">
-                <label for="diary_no">Diary No</label>
-                <input type="text" name="diary_no" id="diary_no" class="form-control" value="<?php echo isset($_GET['diary_no']) ? htmlspecialchars($_GET['diary_no']) : ''; ?>">
+    <form method="get" id="searchForm" class="p-4 mb-4 rounded" style="background-color: #f7f9fc; border: 1px solid #dee2e6;">
+        <div class="form-row align-items-end">
+            <!-- Diary No input -->
+            <div class="col-md-2 mb-3">
+                <label for="diary_no" class="font-weight-bold" style="color: #007bff;">Diary No</label>
+                <input type="text" name="diary_no" id="diary_no" class="form-control border-primary" value="<?php echo isset($_GET['diary_no']) ? htmlspecialchars($_GET['diary_no']) : ''; ?>">
             </div>
-            <div class="col-md-4 mb-3">
-                <label for="date_of_presentation">Date of Presentation</label>
-                <input type="date" name="date_of_presentation" id="date_of_presentation" class="form-control" value="<?php echo isset($_GET['date_of_presentation']) ? htmlspecialchars($_GET['date_of_presentation']) : ''; ?>">
+            <!-- Date of Presentation input -->
+            <div class="col-md-2 mb-3">
+                <label for="date_of_presentation" class="font-weight-bold" style="color: #007bff;">Date of Presentation</label>
+                <input type="date" name="date_of_presentation" id="date_of_presentation" class="form-control border-primary" value="<?php echo isset($_GET['date_of_presentation']) ? htmlspecialchars($_GET['date_of_presentation']) : ''; ?>">
             </div>
-            <div class="col-md-4 mb-3">
-                <label for="presented_by">Presented By</label>
-                <input type="text" name="presented_by" id="presented_by" class="form-control" value="<?php echo isset($_GET['presented_by']) ? htmlspecialchars($_GET['presented_by']) : ''; ?>">
-            </div>
+            <!-- Other inputs -->
+               <!-- Presented By input -->
+        <div class="col-md-2 mb-3">
+            <label for="presented_by" class="font-weight-bold" style="color: #007bff;">Presented By</label>
+            <input type="text" name="presented_by" id="presented_by" class="form-control border-primary" value="<?php echo isset($_GET['presented_by']) ? htmlspecialchars($_GET['presented_by']) : ''; ?>">
         </div>
-        <div class="form-row">
-            <div class="col-md-4 mb-3">
-                <label for="results_per_page">Items per page</label>
-                <select name="results_per_page" id="results_per_page" class="form-control">
-                    <option value="5" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 5) ? 'selected' : ''; ?>>5</option>
-                    <option value="10" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 10) ? 'selected' : ''; ?>>10</option>
-                    <option value="25" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 25) ? 'selected' : ''; ?>>25</option>
-                    <option value="50" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 50) ? 'selected' : ''; ?>>50</option>
-                </select>
-            </div>
-            <div class="col-md-4 align-self-end">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-            </div>
+        <!-- Results Per Page input -->
+        <div class="col-md-2 mb-3">
+            <label for="results_per_page" class="font-weight-bold" style="color: #007bff;">Items per page</label>
+            <select name="results_per_page" id="results_per_page" class="form-control border-primary">
+                <option value="10" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 10) ? 'selected' : ''; ?>>10</option>
+                <option value="100" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 100) ? 'selected' : ''; ?>>100</option>
+                <option value="250" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 250) ? 'selected' : ''; ?>>250</option>
+                <option value="500" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 500) ? 'selected' : ''; ?>>500</option>
+                <option value="5000" <?php echo (isset($_GET['results_per_page']) && $_GET['results_per_page'] == 5000) ? 'selected' : ''; ?>>5000</option>
+            </select>
         </div>
+        <!-- Search and Reset buttons -->
+        <div class="col-md-2 mb-3">
+            <button type="submit" class="btn btn-primary btn-block" style="background-color: #007bff; border-color: #007bff;">Search</button>
+        </div>
+        <div class="col-md-2 mb-3">
+            <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Reset</button>
+        </div>
+    </div>
     </form>
 
     <!-- PHP for fetching and displaying data -->
@@ -372,38 +434,25 @@
         echo '<div class="table-responsive">';
         echo '<table class="table table-bordered table-striped">';
         echo '<thead class="thead-dark">';
-        echo '<tr><th>Diary No</th><th>Date of Presentation</th><th>Nature of Document</th><th>Associated With</th><th>Presented By</th><th>Actions</th><th>Status</th></tr>';
+        echo '<tr>
+                <th class="sortable" id="sort-diary_no" onclick="sortTable(\'diary_no\')">Diary No</th>
+                <th class="sortable" id="sort-date_of_presentation" onclick="sortTable(\'date_of_presentation\')">Date of Presentation</th>
+                <th>Nature of Document</th>
+                <th>Associated With</th>
+                <th>Presented By</th>
+                <th>Actions</th>
+                <th>Status</th>
+              </tr>';
         echo '</thead><tbody>';
+        
         while($row = $result->fetch_assoc()) {
             echo "<tr>";
-            echo "<td>" . htmlspecialchars($row["diary_no"]) . "</td>";
-            echo "<td>" . htmlspecialchars($row["date_of_presentation"]) . "</td>";
+            echo "<td data-column='diary_no'>" . htmlspecialchars($row["diary_no"]) . "</td>";
+            echo "<td data-column='date_of_presentation'>" . htmlspecialchars($row["date_of_presentation"]) . "</td>";
             echo "<td>" . htmlspecialchars($row["nature_of_doc"]) . "</td>";
             echo "<td>" . htmlspecialchars($row["associated_with"]) . "</td>";
             echo "<td>" . htmlspecialchars($row["presented_by"]) . "</td>";
-            echo '<td><button class="btn btn-info btn-sm" onclick="viewDetails(
-                ' . $row["id"] . ', 
-                \'' . htmlspecialchars($row["diary_no"]) . '\', 
-                \'' . htmlspecialchars($row["date_of_presentation"]) . '\', 
-                \'' . htmlspecialchars($row["nature_of_doc"]) . '\', 
-                \'' . htmlspecialchars($row["associated_with"]) . '\', 
-                \'' . htmlspecialchars($row["presented_by"]) . '\', 
-                \'' . htmlspecialchars($row["reviewed_by"]) . '\', 
-                \'' . htmlspecialchars($row["section_officer_remark"]) . '\', 
-                \'' . htmlspecialchars($row["deputy_registrar_remark"]) . '\', 
-                \'' . htmlspecialchars($row["registrar_remark"]) . '\', 
-                \'' . htmlspecialchars($row["not_completed_observations"]) . '\', 
-                \'' . htmlspecialchars($row["casetype"]) . '\', 
-                \'' . htmlspecialchars($row["no_of_applicants"]) . '\', 
-                \'' . htmlspecialchars($row["no_of_respondents"]) . '\', 
-                \'' . htmlspecialchars($row["initial"]) . '\', 
-                \'' . htmlspecialchars($row["remark"]) . '\', 
-                \'' . htmlspecialchars($row["ca_remark"]) . '\', 
-                \'' . htmlspecialchars($row["notification_remark"]) . '\', 
-                \'' . htmlspecialchars($row["notification_date"]) . '\', 
-                \'' . htmlspecialchars($row["nature_of_grievance_other"]) . '\'
-                )">View</button></td>';
-
+            echo '<td><button class="btn btn-info btn-sm" onclick="viewDetails(/* pass details here */)">View</button></td>';
             echo '<td><button class="btn btn-warning btn-sm status-button" onclick="viewStatus(' . $row["id"] . ', \'' . htmlspecialchars($row["diary_no"]) . '\', \'registration\')">Status</button></td>';
             echo "</tr>";
         }

@@ -1,4 +1,9 @@
-<?php require_once dirname(__FILE__).'/../config/route.php'; ?>
+<?php 
+require_once dirname(__FILE__) . '/../config/route.php';
+
+// Get the current file name to determine the active page
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,8 +11,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-     <!-- Bootstrap CSS CDN -->
-     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Optional Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -23,74 +28,66 @@
         color: #2E3192;
       }
 
-      table th{
+      table th {
         padding: 5px !important;
         white-space: nowrap;
       }
 
-      table td{
+      table td {
         padding: 3px !important;
         white-space: nowrap;
       }
 
-      table thead{
+      table thead {
         background-color: #2E3192;
         color: #ffffff;
+      }
+
+      /* Active link styles */
+      .nav-link.active {
+        font-weight: bold;
+        border-bottom: 2px solid #ffffff;
+      }
+
+      /* Hover dropdown */
+      .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
       }
     </style>
   </head>
   <body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg my-bg-color navbar-dark">
       <div class="container">
-      <a class="navbar-brand" href="<?php echo url; ?>">AFT Delhi</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <a class="navbar-brand" href="http://aftdelhi.nic.in">AFT Delhi</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-        <ul class="navbar-nav ml-auto">
-          <!-- <li class="nav-item active">
-            <a class="nav-link" href="<?php echo url; ?>">Home <span class="sr-only">(current)</span></a>
-          </li> -->
-          <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-              Blogs
-            </a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
-          </li> -->
-          <li class="nav-item">
-            <a class="nav-link" href="<?php echo url; ?>">Judgements</a>
-          </li>
-          <?php /*?><li class="nav-item">
-            <a class="nav-link" href="<?php echo url.'views/daily-orders.php'; ?>">Daily Orders</a>
-          </li><?php */?>
-    <li class="nav-item">
-            <a class="nav-link" href="<?php echo url.'views/registration-interim-judgements.php'; ?>">Daily Orders</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="<?php echo url.'views/diary_cases.php'; ?>">Diary</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="<?php echo url.'admins'; ?>">Login</a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="<?php echo url.'views/signup.php'; ?>">Signup</a>
-          </li> -->
-        </ul>
-        <!-- <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form> -->
-      </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="<?php echo url; ?>">Judgements</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <?php echo ($current_page == 'registration-interim-judgements.php') ? 'active' : ''; ?>" href="<?php echo url . 'views/registration-interim-judgements.php'; ?>">Daily Orders</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <?php echo ($current_page == 'diary_cases.php') ? 'active' : ''; ?>" href="<?php echo url . 'views/diary_cases.php'; ?>">Diary</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <?php echo ($current_page == 'calendar.php' || $current_page == 'tentative_list.php') ? 'active' : ''; ?>" href="<?php echo url . 'views/calendar.php'; ?>">Tentative List</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle <?php echo ($current_page == 'judgements_rb.php' || $current_page == 'rb_causelist.php') ? 'active' : ''; ?>" href="#" id="regionalBenchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Regional Bench
+              </a>
+              <div class="dropdown-menu" aria-labelledby="regionalBenchDropdown">
+                <a class="dropdown-item <?php echo ($current_page == 'judgements_rb.php') ? 'active' : ''; ?>" href="<?php echo url . 'views/judgements_rb.php'; ?>">Judgements</a>
+                <a class="dropdown-item <?php echo ($current_page == 'cause_list_rb.php') ? 'active' : ''; ?>" href="<?php echo url . 'views/rb_causelist.php'; ?>">Cause List</a>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
-    <main>
-      
-    
+<main>
