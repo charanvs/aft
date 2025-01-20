@@ -310,19 +310,34 @@
 		{
 			$condition = "";
 			$flag = false;
+		
 			foreach ($filterArray as $key => $value) {
-				if(strlen($value) > 0){
-					if($flag){
-						$condition .= " AND "; 
-					}
-					else{
+				if (strlen($value) > 0) {
+					if ($flag) {
+						$condition .= " AND ";
+					} else {
 						$flag = true;
 					}
-					$condition .= $key."='$value'";
+		
+					$escapedValue = $this->conn->real_escape_string($value); // Escape the input to prevent SQL injection
+		
+					if ($key === 'advocate') {
+						// Special handling for advocate field
+						$condition .= "(padvocate LIKE '%$escapedValue%' OR radvocate LIKE '%$escapedValue%')";
+					} elseif ($key === 'applicant' || $key === 'respondent') {
+						// Use LIKE for partial matching of applicant and respondent
+						$condition .= "$key LIKE '%$escapedValue%'";
+					} else {
+						// Default condition for other fields
+						$condition .= "$key = '$escapedValue'";
+					}
 				}
 			}
+		
 			return $condition;
 		}
+		
+
 
 		public function timeToArray($time)
 		{

@@ -1,232 +1,238 @@
-<?php require_once dirname(__FILE__).'/header.php';
-      require_once dirname(__FILE__).'/../models/DailyOrdersModel.php';
-      $model = new DailyOrdersModel();
+<?php 
+include_once dirname(__FILE__).'/header.php';
+include_once dirname(__FILE__).'/../models/DailyOrdersModel.php';
 
-      $court_no = '';
-      if(isset($_GET['court_no'])){
-        $court_no = $_GET['court_no'];
-      }
-      
-      $registration_no = '';
-      if(isset($_GET['registration_no'])){
-        $registration_no = $_GET['registration_no'];
-      }
-      
-      
-      $fromDateField = '';
-      if(isset($_GET['from_date']) && $_GET['from_date'] != ''){
-        $fromDateField = $_GET['from_date'];
-        $from_date = date('d-m-Y', strtotime($_GET['from_date']));
-      }
-      else{
-        $from_date = '';
-      }
+$model = new DailyOrdersModel();
 
+// Initialize variables with default values
+$courtNo = filter_input(INPUT_GET, 'court_no', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+$registrationNo = filter_input(INPUT_GET, 'registration_no', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+$fromDateField = filter_input(INPUT_GET, 'from_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+$fromDate = '';
+if (!empty($fromDateField)) {
+    $parsedDate = strtotime($fromDateField);
+    $fromDate = $parsedDate !== false ? date('d-m-Y', $parsedDate) : '';
+}
 
-      $filterData['registration_no'] = $registration_no;
-      $filterData['courtno'] = $court_no;
-	  $filterData["aft_interim_judgements.dol"] = $from_date;
+$applicant = filter_input(INPUT_GET, 'applicant', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+$respondent = filter_input(INPUT_GET, 'respondent', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+$advocate = filter_input(INPUT_GET, 'advocate', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
 
-      $condition = '';
-      
-	  
+$recordPerPage = filter_input(INPUT_GET, 'record_per_page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '10';
+// Validate and sanitize recordPerPage
+if (!in_array($recordPerPage, ['10', '25', '50', '100', '250', '500', 'All'])) {
+    $recordPerPage = '10';
+}
 
-      $record_per_page = 10;
-      if(isset($_GET['record_per_page'])){
-        $record_per_page = $_GET['record_per_page'];
-      }
-      $startPage = $model->page($record_per_page);
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?? 1;
+if ($page < 1) {
+    $page = 1;
+}
 
-      $search = '';
-      $totalRecords = 0;
-      
-      $results = $model->getOrderFilter2($filterData ," limit $startPage, $record_per_page");
-    //   if($results != null){
-    //     $totalResults = $model->getOrderFilter2($filterData, $condition, 'total');
-    //     $totalRecords = $totalResults[0]['total'];
-    //   }
-      //die($totalRecords);
-      //print_r($results);
-      
-    //   if(isset($_GET['search'])){
-    //     $search = $_GET['search'];
-    //     $searchData['registration_no'] = $search;
-    //     $searchData['diaryno'] = $search;
-    //     $searchData['file_no'] = $search;
-    //     $results = $model->getOrderFilter2($searchData ," limit $startPage, $record_per_page", 'search');
-    //     if($results != null){
-    //       $totalRecords = count($model->getOrderFilter2($searchData, $condition, 'search'));
-    //     }
-    //   }
-    //   else{
-    //     $results = $model->getOrderFilter2($filterData, " limit $startPage, $record_per_page");
-    //     if($results != null){
-    //       $totalRecords = $model->getTotalWhere('aft_registration', $condition);
-    //     }
-    //   }
-	  
-	  
-	  
+$filterData = [
+    'registration_no' => $registrationNo,
+    'courtno' => $courtNo,
+    'aft_interim_judgements.dol' => $fromDate,
+    'applicant' => $applicant,
+    'respondent' => $respondent,
+    'advocate' => $advocate
+];
+
+$startPage = $recordPerPage === 'All' ? 0 : ($page - 1) * $recordPerPage;
+
+// Fetch results based on $recordPerPage
+$orderClause = " ORDER BY id DESC";
+if ($recordPerPage === 'All') {
+    $results = $model->getOrderFilter2($filterData, $orderClause);
+} else {
+    $results = $model->getOrderFilter2($filterData, "$orderClause LIMIT $startPage, $recordPerPage");
+}
+
+// Get the total number of records
+$totalRecords = $results ? ($model->getOrderFilter2($filterData, '', 'total')[0]['total'] ?? 0) : 0;
+$totalPages = $recordPerPage === 'All' ? 1 : ceil($totalRecords / $recordPerPage);
+
+function formatApplicantName($name) {
+    return preg_replace_callback('/\d+/', function ($matches) {
+        $digits = $matches[0];
+        return str_repeat('x', max(strlen($digits) - 3, 0)) . substr($digits, -3);
+    }, $name);
+    return $name;
+}
 ?>
-
-
-
-
-
-
-
-
-
-<style type="text/css">
+<style>
+    .applicant-column {
+    width: 150px; /* Adjust the width as needed */
+    max-width: 150px;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Show ellipsis for overflowing text */
+}
 
 </style>
-
-
 <section class="container mt-3">
     <div class="card">
-      <div class="card-header">
-        <div class="row">
-          <div class="col-md-6">
-            <h5>Daily Order..</h5>
-          </div>
-          <div class="col-md-6">
-            <div class="float-sm-right d-flex justify-content-right">
-              <label for="record_per_page">Pages</label>
-              <select id="record_per_page" class="form-control-sm mx-1" onchange="filter()">
-                <option value="10" <?php echo $record_per_page == 10 ? 'selected' : ''; ?>>10</option>
-                <option value="25" <?php echo $record_per_page == 25 ? 'selected' : ''; ?>>25</option>
-                <option value="50" <?php echo $record_per_page == 50 ? 'selected' : ''; ?>>50</option>
-                <option value="100" <?php echo $record_per_page == 100 ? 'selected' : ''; ?>>100</option>
-                <option value="250" <?php echo $record_per_page == 250 ? 'selected' : ''; ?>>250</option>
-                <option value="500" <?php echo $record_per_page == 500 ? 'selected' : ''; ?>>500</option>
-              </select>
-              <!--<div class="input-group">-->
-              <!--  <input type="text" id="search" class="form-control border-secondary" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" value="<?php echo !empty($search) ? $search : ''; ?>" style="height: 32px;">-->
-              <!--  <div class="input-group-append">-->
-              <!--    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="filter()"><i class="fa fa-search"></i></button>-->
-              <!--  </div>-->
-              <!--</div>-->
+        <div class="card-header">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <h5>Daily Order</h5>
+                </div>
+                <div class="col-12 col-md-6 text-md-right mt-2 mt-md-0">
+                    <label for="record_per_page" class="mr-2">Items per page</label>
+                    <select id="record_per_page" class="form-control-sm" onchange="filter()">
+                        <?php foreach (['10', '25', '50', '100', '250', '500', 'All'] as $value): ?>
+                            <option value="<?= $value ?>" <?= $recordPerPage == $value ? 'selected' : '' ?>><?= $value ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-2 form-group">
-            <input type="date" id="from_date" name="from_date" placeholder="From Date (dd-mm-yyyy)" class="form-control-sm w-100" value="<?php echo $fromDateField; ?>">
-          </div>
-          
-          <div class="col-md-2 form-group">
-            <select name="court_no" type="text" id="court_no" class="form-control-sm w-100">
-              <option value="">All Courts</option>
-              <option value="1" <?php echo $court_no == 1 ? "selected" : ""; ?>>1</option>
-              <option value="2" <?php echo $court_no == 2 ? "selected" : ""; ?>>2</option>
-              <option value="3" <?php echo $court_no == 3 ? "selected" : ""; ?>>3</option>
-              <option value="4" <?php echo $court_no == 4 ? "selected" : ""; ?>>4</option>
-            </select>
-          </div>
-          <div class="col-md-3 form-group">
-            <input name="registration_no" type="text" id="registration_no" placeholder="Registration No."  class="form-control-sm w-100" value="<?php echo $registration_no; ?>">
-          </div>
-          <!-- <div class="col-md-3 form-group">
-            <input name="applicant" type="text" id="applicant" placeholder="Applicant's Name" class="form-control-sm w-100" value="<?php echo $applicant; ?>">
-          </div> -->
-          <div class="col-md-2 form-group">
-            <button type="button" onclick="filter()" class="btn btn-sm btn-block btn-primary"><i class="fa fa-search mr-1"></i>Search</button>
-          </div>
-        </div>
-        <table class="table table-bordered table-striped table-hover table-responsive">
-          <thead>
-            <tr>
-              <th align="center">Sl.<br />
-              No.</th>
-              <th align="center">Reg <br />
-              No.</th>
-              <th align="center">Next Date<br />
-              Hearing</th>
-              <th align="center">Judgement <br />
-              PDF</th>
-              <th align="center">Court<br />
-              No.</th>
-              <th align="center">Case <br />
-              Type</th>
-              <th align="center">Date of <br />
-              Listing</th>
-              <th align="center">File <br />
-              No.</th>
-              <th align="center">Year</th>
-              <th align="center">Applicant Name</th>
-              <th align="center">Respondent Name</th>
-              <th align="center">Petitioner <br />
-              Advocate</th>
-              <th align="center">Respondent <br />
-              Advocate</th>
-            <?php /*?>  <th align="center">Order <br />
-              PDF File</th><?php */?>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if($results != null){ 
-              $sno = 0; 
-              if(isset($_GET['page'])){
-                $sno = ($_GET['page'] - 1)  * $record_per_page;
-              }
-              foreach ($results as $key) {  $sno++; ?>
-            <tr>
-              <td><?php echo $sno; ?></td>
-              <td align="center"><?php echo $key["registration_no"]; ?></td>
-               <td align="center"><?php echo $key["dol"]; ?></td>
-     
-                   <td align="center"><a href="<?php echo "https://aftdelhi.nic.in/assets/pending_cases/".$key["year"].'/'. $key["case_type_name"].'/'.$key["pdfname"]?>"
-	 target="_blank"><i class="fa fa-eye mr-1"></i>View</a>
-     
-     
-     <br> <br></td>
-     
-     
-              <td align="center"><?php echo $key["courtno"]; ?></td> 
-              <td align="center"><?php echo $key["case_type_name"]; ?>
-              
-              </td>
-              <td align="center"><?php echo $key["interim_dol"]; ?></td>
-              <td align="center"><?php echo $key["file_no"]; ?></td> 
-               <td align="center"><?php echo $key["year"]; ?></td> 
-               <td><?php echo $key["applicant"]; ?></td> 
-               <td><?php echo $key["respondent"]; ?></td> 
-               <td><?php echo $key["padvocate"]; ?></td> 
-               <td><?php echo $key["radvocate"]; ?></td>
-             <?php /*?>  <td><?php echo $key["pdfname"]; ?></td><?php */?> 
-            </tr>
-            <?php }} ?>
-          </tbody>
-        </table>
-        <?php 
-        if($results != null){
-            $totalResults = $model->getOrderFilter2($filterData, $condition, 'total');
-            $totalRecords = $totalResults[0]['total'];
-          }
-        $model->pagination(url.'views/registration-interim-judgements.php', $totalRecords, $record_per_page); ?>
-      </div>
-    </div>
-      
+        <div class="card-body">
+            <form id="filterForm">
+                <div class="form-row">
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <input type="date" id="from_date" name="from_date" class="form-control-sm w-100" value="<?= htmlspecialchars($fromDateField) ?>">
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <select name="court_no" id="court_no" class="form-control-sm w-100">
+                            <option value="">All Courts</option>
+                            <?php foreach (range(1, 4) as $court): ?>
+                                <option value="<?= $court ?>" <?= $courtNo == $court ? 'selected' : '' ?>><?= $court ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                    <input name="registration_no" type="text" id="registration_no" placeholder="Registration No." 
+       class="form-control-sm w-100" 
+       value="<?= htmlspecialchars($registrationNo) ?>" 
+       oninput="formatRegistrationNo(this)">
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <input name="applicant" type="text" id="applicant" placeholder="Applicant's Name" class="form-control-sm w-100" value="<?= htmlspecialchars($applicant) ?>">
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <input name="respondent" type="text" id="respondent" placeholder="Respondent's Name" class="form-control-sm w-100" value="<?= htmlspecialchars($respondent) ?>">
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <input name="advocate" type="text" id="advocate" placeholder="Advocate Name" class="form-control-sm w-100" value="<?= htmlspecialchars($advocate) ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <button type="button" onclick="filter()" class="btn btn-sm btn-primary btn-block"><i class="fa fa-search mr-1"></i>Search</button>
+                    </div>
+                    <div class="form-group col-12 col-sm-6 col-md-2">
+                        <button type="button" onclick="resetFilters()" class="btn btn-sm btn-secondary btn-block"><i class="fa fa-undo mr-1"></i>Reset</button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Reg No.</th>
+                            <th>Next Date</th>
+                            <th>Order</th>
+                            <th>Court</th>
+                            <th>Date Listing</th>
+                            <th class="applicant-column">Applicant</th>
+                            <th>Respondent</th>
+                            <th>PAdvocate</th>
+                            <th>RAdvocate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($results)) { 
+                            $sno = ($page - 1) * $recordPerPage;
+                            foreach ($results as $key) {  
+                                $sno++; ?>
+                                <tr>
+                                    <td><?= $sno ?></td>
+                                    <td><?= htmlspecialchars($key['registration_no'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($key['dol'] ?? '') ?></td>
+                                    <td>
+                                        <a href="https://aftdelhi.nic.in/assets/pending_cases/<?= $key['year'] ?>/<?= $key['case_type_name'] ?>/<?= $key['pdfname'] ?>" target="_blank">
+                                            <i class="fa fa-eye mr-1"></i>View
+                                        </a>
+                                    </td>
+                                    <td><?= htmlspecialchars($key['courtno'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($key['interim_dol'] ?? '') ?></td>
+                                    <td class="applicant-column" title="<?= htmlspecialchars(preg_replace_callback('/\d+/', function ($matches) {
+    $digits = $matches[0];
+    $masked = str_repeat('x', max(strlen($digits) - 3, 0)) . substr($digits, -3);
+    return $masked;
+}, $key['applicant'] ?? '')) ?>">
+    <?= htmlspecialchars(preg_replace_callback('/\d+/', function ($matches) {
+        $digits = $matches[0];
+        $masked = str_repeat('x', max(strlen($digits) - 3, 0)) . substr($digits, -3);
+        return $masked;
+    }, $key['applicant'] ?? '')) ?>
+</td>
 
+
+                                    <td class="applicant-column" title="<?= htmlspecialchars($key['respondent'] ?? '') ?>">
+                                        <?= mb_strimwidth(htmlspecialchars($key['respondent'] ?? ''), 0, 20, '...') ?>
+                                    </td>
+                                    <td class="applicant-column" title="<?= htmlspecialchars($key['padvocate'] ?? '') ?>">
+                                        <?= mb_strimwidth(htmlspecialchars($key['padvocate'] ?? ''), 0, 20, '...') ?>
+                                    </td>
+                                    <td class="applicant-column" title="<?= htmlspecialchars($key['radvocate'] ?? '') ?>">
+                                        <?= mb_strimwidth(htmlspecialchars($key['radvocate'] ?? ''), 0, 20, '...') ?>
+                                    </td>
+                                </tr>
+                            <?php }
+                        } else { ?>
+                            <tr>
+                                <td colspan="10" class="text-center">No records found.</td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php if ($recordPerPage !== 'All') {
+                echo '<nav><ul class="pagination justify-content-center">';
+
+                $maxPagesToShow = 10;
+                $startPage = max(1, $page - floor($maxPagesToShow / 2));
+                $endPage = min($totalPages, $startPage + $maxPagesToShow - 1);
+                $startPage = max(1, $endPage - $maxPagesToShow + 1);
+
+                if ($page > 1) {
+                    echo "<li class='page-item'><a class='page-link' href='?" . http_build_query(array_merge($_GET, ['page' => $page - 1])) . "'>&laquo; Prev</a></li>";
+                }
+
+                for ($i = $startPage; $i <= $endPage; $i++) {
+                    $active = $i == $page ? 'active' : '';
+                    echo "<li class='page-item $active'><a class='page-link' href='?" . http_build_query(array_merge($_GET, ['page' => $i])) . "'>$i</a></li>";
+                }
+
+                if ($page < $totalPages) {
+                    echo "<li class='page-item'><a class='page-link' href='?" . http_build_query(array_merge($_GET, ['page' => $page + 1])) . "'>Next &raquo;</a></li>";
+                }
+
+                echo '</ul></nav>';
+            } ?>
+        </div>
+    </div>
 </section>
 
 <script>
-  function filter(){
-    var from_date = $('#from_date').val();
-    var court_no = $('#court_no').val();
-    var registration_no = $('#registration_no').val();
-    var record_per_page = $('#record_per_page').val();
-    //var search = $('#search').val();
-    var search = "";
-    if(search.length != 0){
-      search = "&search="+search;
+    function formatRegistrationNo(input) {
+        // Add a space after any alphabetic characters followed by digits
+        input.value = input.value.replace(/([a-zA-Z]+)(\d+)/, '$1 $2');
     }
-    else{
-      search = "";
+    function filter() {
+        const params = new URLSearchParams(new FormData(document.getElementById('filterForm')));
+        const recordPerPage = document.getElementById('record_per_page').value;
+        params.set('record_per_page', recordPerPage);
+        params.set('page', 1); // Reset to the first page on filter change
+        window.location.href = "<?= url.'views/registration-interim-judgements.php' ?>?" + params.toString();
     }
-    window.location.href="<?php echo url.'views/registration-interim-judgements.php?&registration_no='; ?>"+registration_no+"&court_no="+court_no+"&from_date="+from_date+"&record_per_page="+record_per_page+search;
-  }
+
+    function resetFilters() {
+        window.location.href = "<?= url.'views/registration-interim-judgements.php' ?>";
+    }
 </script>
-<?php require_once dirname(__FILE__).'/footer.php'; ?>
+
+<?php include_once dirname(__FILE__).'/footer.php'; ?>

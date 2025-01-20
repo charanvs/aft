@@ -9,55 +9,62 @@
 		}
 
 		public function getOrderFilter2($filterArray, $extraCondition = '', $action = '')
-		{
-		    $flag = false;
-            if($action == 'total'){
-                $sql = "SELECT count(*) as total "; 
-                $flag = true;
-            }
-            else{
-                $sql = "SELECT aft_registration.*,aft_interim_judgements.dol as interim_dol, pdfname, aft_case_type.name as case_type_name, aft_dol_dependency.courtno "; 
-            }
-			$sql .= "from aft_interim_judgements, aft_registration, aft_dol_dependency, aft_case_type "; 
-			$sql .= "WHERE ";
-            $sql .= "aft_interim_judgements.regid=aft_registration.id and "; 
-            $sql .= "aft_dol_dependency.regid=aft_registration.id and ";
-            $sql .= "aft_interim_judgements.dol=aft_dol_dependency.dol and ";
-            $sql .= "aft_registration.case_type=aft_case_type.id "; 
+{
+    $flag = false;
 
-			
-			$filterCondition = $this->getCondition($filterArray);
+    // Select columns based on the action
+    if ($action == 'total') {
+        $sql = "SELECT count(*) as total ";
+        $flag = true;
+    } else {
+        $sql = "SELECT 
+                    aft_registration.*,
+                    aft_interim_judgements.dol as interim_dol,
+                    pdfname,
+                    aft_case_type.name as case_type_name,
+                    aft_dol_dependency.courtno,
+                    aft_registration.applicant,
+                    aft_registration.respondent,
+                    aft_registration.padvocate,
+                    aft_registration.radvocate ";
+    }
 
-			if(!empty($filterCondition)){
-				$sql .= ' AND '.$filterCondition;
-				
-				if(strpos($filterCondition, 'courtno') === false){
-                    $sql .= ' and aft_dol_dependency.courtno != 0';
-                } 
-			}
-			elseif($flag){
-			    //$temp = [];
-			    //$temp = array('total' => 0);
-			    //return $temp;
-			    return null;
-			}
-			
-			if(!empty($extraCondition)){
-			    $sql .= $extraCondition;
-			}
-			
-			
-			//echo $sql;
-	        //die();
-			$results = $this->getQuery($sql);
-			if($results != null){
-				return $results;
-			}
-			else{
-				return null;
-			}
-			return $results;
-		}
+    // Base query
+    $sql .= "FROM 
+                aft_interim_judgements, 
+                aft_registration, 
+                aft_dol_dependency, 
+                aft_case_type ";
+    $sql .= "WHERE 
+                aft_interim_judgements.regid = aft_registration.id AND 
+                aft_dol_dependency.regid = aft_registration.id AND 
+                aft_interim_judgements.dol = aft_dol_dependency.dol AND 
+                aft_registration.case_type = aft_case_type.id ";
+
+    // Get additional filter conditions
+    $filterCondition = $this->getCondition($filterArray);
+
+    if (!empty($filterCondition)) {
+        $sql .= ' AND ' . $filterCondition;
+
+        // Ensure courtno is not 0 unless already specified
+        if (strpos($filterCondition, 'courtno') === false) {
+            $sql .= ' AND aft_dol_dependency.courtno != 0';
+        }
+    } elseif ($flag) {
+        return null; // If no conditions and 'total' action, return null
+    }
+
+    // Append extra conditions if provided
+    if (!empty($extraCondition)) {
+        $sql .= $extraCondition;
+    }
+
+    // Execute the query
+    $results = $this->getQuery($sql);
+    return $results ?: null;
+}
+
 		
 		public function getOrderFilter($filterArray, $extraCondition = '', $action = '')
 		{
