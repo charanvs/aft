@@ -3,9 +3,9 @@
 
 // Database connection parameters
 $servername = "localhost";
-$username = "root";
+$username = "";
 $password = "";
-$dbname = "aft_site";
+$dbname = "";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
