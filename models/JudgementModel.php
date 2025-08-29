@@ -38,18 +38,17 @@
 			//echo $sql.'</br></br>';
 			//die();
 			$results = $this->getQuery($sql);
-			if($results != null){
-				return $results;
-			}
-			else{
-				return null;
-			}
-			return $results;
-		}
+                        if($results != null){
+                                return $results;
+                        }
+                        else{
+                                return null;
+                        }
+                }
 		
 		function getTotalJudgements($filterArray, $action = ""){
 		    $sql = "select count(*) as total from aft_judgement, aft_disposedof, aft_interim_judgements where aft_judgement.regno=aft_disposedof.regno and aft_disposedof.regid=aft_interim_judgements.regid";
-		    $$filterCondition = "";
+                    $filterCondition = "";
 		    if(!empty($action)){
 				$filterCondition = $this->getCondition($filterArray);
 			}
@@ -62,14 +61,13 @@
 			}
 			
 			//echo $sql;
-			$results = $this->getQuery($sql);
-			if($results != null){
-				return $results[0]["total"];
-			}
-			else{
-				return 0;
-			}
-			return $results;
-		}
+                        $results = $this->getQuery($sql);
+                        if($results != null){
+                                return $results[0]["total"];
+                        }
+                        else{
+                                return 0;
+                        }
+                }
 	}
 ?>
